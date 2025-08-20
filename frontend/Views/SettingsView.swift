@@ -6,6 +6,7 @@ struct SettingsView: View {
     @State private var darkModeEnabled = false
     @State private var apiKey = ""
     @State private var showingRAGTest = false
+    @State private var ragApiURL = UserDefaults.standard.string(forKey: "RAG_API_BASE_URL") ?? ""
     @StateObject private var authService = AuthService()
     
     var body: some View {
@@ -129,6 +130,23 @@ struct SettingsView: View {
                 .padding(.horizontal, 16)
             
             VStack(spacing: 0) {
+                // RAG API URL Configuration
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("RAG API URL")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    
+                    TextField("Enter API URL (e.g., https://your-app.railway.app)", text: $ragApiURL)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .onChange(of: ragApiURL) { newValue in
+                            UserDefaults.standard.set(newValue, forKey: "RAG_API_BASE_URL")
+                        }
+                }
+                .padding()
+                .background(Color(UIColor.systemGray6))
+                
+                Divider()
+                
                 Button(action: {
                     showingRAGTest = true
                 }) {

@@ -15,7 +15,22 @@ struct RAGSnippet {
 }
 
 class RAGTestService: ObservableObject {
-    private let baseURL = "http://localhost:8000"
+    // Use Railway URL in production, localhost for development
+    private var baseURL: String {
+        // Check if custom URL is set in UserDefaults
+        if let customURL = UserDefaults.standard.string(forKey: "RAG_API_BASE_URL") {
+            return customURL
+        }
+        
+        #if DEBUG
+        // Development: use local IP for iOS Simulator
+        return "http://192.168.1.83:8000"
+        #else
+        // Production: use Railway URL - replace with your actual Railway URL
+        return "https://your-railway-app-name.up.railway.app"
+        #endif
+    }
+    
     @Published var isLoading = false
     @Published var lastError: String = ""
     @Published var lastResult: RAGTestResult?
