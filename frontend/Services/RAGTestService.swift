@@ -26,8 +26,8 @@ class RAGTestService: ObservableObject {
         // Development: use local IP for iOS Simulator
         return "http://192.168.1.83:8000"
         #else
-        // Production: use Railway URL - replace with your actual Railway URL
-        return "https://your-railway-app-name.up.railway.app"
+        // Production: use Railway URL
+        return "https://spotted-mom-production.up.railway.app"
         #endif
     }
     
@@ -47,7 +47,7 @@ class RAGTestService: ObservableObject {
         ]
         
         guard let url = URL(string: "\(baseURL)/api/rag/test/dev") else {
-            lastError = "Invalid API URL"
+            lastError = "Invalid API URL: \(baseURL)"
             isLoading = false
             completion(nil)
             return
@@ -89,6 +89,13 @@ class RAGTestService: ObservableObject {
                 
                 do {
                     if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                        // Check if RAG is disabled
+                        if let detail = json["detail"] as? String, detail.contains("RAG system is not enabled") {
+                            self?.lastError = "RAG system is disabled on Railway. Please enable REG_ENABLED=true in Railway environment variables."
+                            completion(nil)
+                            return
+                        }
+                        
                         let result = self?.parseRAGResponse(json: json, query: query)
                         self?.lastResult = result
                         completion(result)
