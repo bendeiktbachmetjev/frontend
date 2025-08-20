@@ -5,6 +5,7 @@ struct SettingsView: View {
     @State private var notificationsEnabled = true
     @State private var darkModeEnabled = false
     @State private var apiKey = ""
+    @State private var showingRAGTest = false
     @StateObject private var authService = AuthService()
     
     var body: some View {
@@ -15,6 +16,9 @@ struct SettingsView: View {
                 
                 // App settings
                 settingsSection
+                
+                // RAG Test section
+                ragTestSection
                 
                 // About the app
                 aboutSection
@@ -29,6 +33,9 @@ struct SettingsView: View {
             .padding(.top, 16)
         }
         .background(Color.white) // White background for the whole screen
+        .sheet(isPresented: $showingRAGTest) {
+            RAGTestView()
+        }
     }
     
     private var profileSection: some View {
@@ -102,6 +109,33 @@ struct SettingsView: View {
                 }) {
                     HStack {
                         Text("Language")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.gray)
+                    }
+                }
+                .padding()
+                .background(Color(UIColor.systemGray6))
+            }
+            .cornerRadius(12)
+            .padding(.horizontal, 16)
+        }
+    }
+    
+    private var ragTestSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Development Tools")
+                .font(.headline)
+                .padding(.horizontal, 16)
+            
+            VStack(spacing: 0) {
+                Button(action: {
+                    showingRAGTest = true
+                }) {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.blue)
+                        Text("Test RAG Knowledge Base")
                         Spacer()
                         Image(systemName: "chevron.right")
                             .foregroundColor(.gray)
